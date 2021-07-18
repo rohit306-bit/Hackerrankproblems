@@ -1,0 +1,360 @@
+//=====================EXCEPTIONAL SERVER==========================//
+
+#include <iostream>
+#include <exception>
+#include <string>
+#include <stdexcept>
+#include <vector>
+#include <cmath>
+using namespace std;
+
+class Server {
+private:
+	static int load;
+public:
+	static int compute(long long A, long long B) {
+		load += 1;
+		if(A < 0) {
+			throw std::invalid_argument("A is negative");
+		}
+		vector<int> v(A, 0);
+		int real = -1, cmplx = sqrt(-1);
+		if(B == 0) throw 0;
+		real = (A/B)*real;
+		int ans = v.at(B);
+		return real + A - B*ans;
+	}
+	static int getLoad() {
+		return load;
+	}
+};
+int Server::load = 0;
+
+int main() {
+	int T; cin >> T;
+	while(T--) {
+		long long A, B;
+		cin >> A >> B;
+
+		/* Enter your code here. */
+        Server obj;
+        try{
+            cout<<obj.compute(A,B)<<endl;
+        }
+        catch(bad_alloc &error){
+            cout<<"Not enough memory"<<endl;
+        }
+        catch(exception &error)
+        {
+            cout<<"Exception: "<<error.what()<<endl;
+        }
+        catch(...){
+            cout<<"Other Exception"<<endl;
+        }
+
+	}
+	cout << Server::getLoad() << endl;
+	return 0;
+}
+
+
+
+//================================VIRTUAL FUNCTION====================//
+
+//===============NOT WORKING================//
+
+#include <cmath>
+#include <cstdio>
+#include <vector>
+#include <iostream>
+#include <algorithm>
+using namespace std;
+static int i=0;
+static int j=0;
+
+class person{
+    public:
+    string name;
+    int age, score, id;
+    virtual void putdata()=0;
+    virtual void getdata()=0;
+};
+
+class professor : public person{
+    void putdata(){
+        cout<<name<<' '<<age<<' '<<score<<' '<<++i<<endl;
+    }
+    void getdata(){
+        cin>>name>>age>>score;
+    }
+};
+
+class student : public person{
+    void putdata(){
+        cout<<name<<' '<<age<<' '<<score<<' '<<++j<<endl;
+    }
+    
+    void getdata(){
+        cin>>name>>age;score=0;
+        for(int i=0,x;i<6;i++)
+        cin>>x,score+=x;
+    }
+};
+int main(){
+
+    int n, val;
+    cin>>n; //The number of objects that is going to be created.
+    Person *per[n];
+
+    for(int i = 0;i < n;i++){
+
+        cin>>val;
+        if(val == 1){
+            // If val is 1 current object is of type Professor
+            per[i] = new Professor;
+
+        }
+        else per[i] = new Student; // Else the current object is of type Student
+
+        per[i]->getdata(); // Get the data from the user.
+
+    }
+
+    for(int i=0;i<n;i++)
+        per[i]->putdata(); // Print the required output for each object.
+
+    return 0;
+
+}
+
+
+
+//================================VIRTUAL FUNCTION====================//
+
+
+#include <cmath>
+#include <cstdio>
+#include <vector>
+#include <iostream>
+#include <algorithm>
+using namespace std;
+class Person
+    {
+    public:
+    virtual void getdata() = 0;
+    virtual void putdata() = 0;
+    protected:
+    string name;
+    int age, sum=0;
+   };
+class Professor : public Person
+    {
+    public:
+    Professor():
+        id {current_id++}
+    { }
+    void getdata()
+        {
+        cin>>name>>age>>pub;
+        }
+    void putdata()
+        {
+        cout<<name<<" "<<age<<" "<<pub<<" "<<id<<endl;
+        }
+    private:
+    int pub;
+    int id;
+    static int current_id;
+   };
+class Student : public Person
+    {
+    public:
+    Student():
+        marks(6),
+        id {current_id++}
+    { }
+    void getdata()
+        {
+        int i;
+        cin>>name>>age;
+        for (auto& mark : marks)
+        {
+            cin >> mark;
+            sum+=mark;
+        }
+        }
+    void putdata()
+        {
+        int i;
+        cout<<name<<" "<<age<<" "<<sum<<" "<<id<<endl;
+        }
+    private:
+    vector<int> marks;
+    int id;
+    static int current_id;
+};
+int Professor::current_id {1};
+
+int Student::current_id {1};
+int main(){
+
+    int n, val;
+    cin>>n; //The number of objects that is going to be created.
+    Person *per[n];
+
+    for(int i = 0;i < n;i++){
+
+        cin>>val;
+        if(val == 1){
+            // If val is 1 current object is of type Professor
+            per[i] = new Professor;
+
+        }
+        else per[i] = new Student; // Else the current object is of type Student
+
+        per[i]->getdata(); // Get the data from the user.
+
+    }
+
+    for(int i=0;i<n;i++)
+        per[i]->putdata(); // Print the required output for each object.
+
+    return 0;
+
+}
+
+
+
+//===============================Abstract Classes - Polymorphism===================================//
+
+
+
+
+#include <iostream>
+#include <vector>
+#include <map>
+#include <string>
+#include <algorithm>
+#include <set>
+#include <cassert>
+using namespace std;
+
+struct Node{
+   Node* next;
+   Node* prev;
+   int value;
+   int key;
+   Node(Node* p, Node* n, int k, int val):prev(p),next(n),key(k),value(val){};
+   Node(int k, int val):prev(NULL),next(NULL),key(k),value(val){};
+};
+
+class Cache{
+   
+   protected: 
+   map<int,Node*> mp; //map the key to the node in the linked list
+   int cp;  //capacity
+   Node* tail; // double linked list tail pointer
+   Node* head; // double linked list head pointer
+   virtual void set(int, int) = 0; //set function
+   virtual int get(int) = 0; //get function
+
+};
+
+                        class LRUCache : public Cache {
+public:
+    LRUCache(size_t capacity)
+    {
+        cp = capacity;
+        tail = 0;
+        head = 0;
+    }
+    
+    ~LRUCache() {
+        while(tail) {
+            auto node = tail;
+            tail = tail->prev;
+            delete node;
+        }
+    }
+    
+    // Set/insert the value off the key, if present, otherwise
+    // add the key as the most recently used key. If the cache
+    // has reached its capacity, it should replace the least
+    // recently used key with a new key.
+    void set(int key, int value) {
+        Node* node;
+        auto it = mp.find(key);
+        if(mp.end() == it) {
+            if(mp.size() < cp) {
+                node = new Node(key, value);
+                if(tail) {
+                    tail->next = node;
+                    node->prev = tail;
+                } else {
+                    tail = node;
+                    head = node;
+                }
+            } else {
+                node = tail;
+                mp.erase(tail->value);
+            }
+            mp.insert(make_pair(key, node));
+        } else {
+            node = it->second;
+        }
+        node->key = key;
+        node->value = value;
+        set_mru(node);
+    }
+    
+    // Get the value (will always be positive) of the key
+    // if the key exists in the cache and then make that key
+    // as the most recently used key; otherwise, return -1.
+    int get(int key) {
+        auto it = mp.find(key);
+        if(mp.end() == it)
+            return -1;
+
+        auto node = it->second;
+        set_mru(node);
+        return node->value;
+    }
+
+private:
+    void set_mru(Node* node) {
+        if(node->next) {
+            node->next->prev = node->prev;
+        }
+        if(node->prev) {
+            node->prev->next = node->next;
+        }
+        if(tail == node)
+            tail = node->prev;
+        node->prev = 0;
+        node->next = head;
+        head = node;
+    }
+};
+int main() {
+   int n, capacity,i;
+   cin >> n >> capacity;
+   LRUCache l(capacity);
+   for(i=0;i<n;i++) {
+      string command;
+      cin >> command;
+      if(command == "get") {
+         int key;
+         cin >> key;
+         cout << l.get(key) << endl;
+      } 
+      else if(command == "set") {
+         int key, value;
+         cin >> key >> value;
+         l.set(key,value);
+      }
+   }
+   return 0;
+}
+
+
+
